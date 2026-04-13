@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arms Control Verification Intensity Explorer</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --red:     #a32d2d;
+    --red-bg:  rgba(163,45,45,0.08);
+    --red-fill:rgba(163,45,45,0.82);
+    --red-ring:rgba(163,45,45,0.14);
+    --gray:    #5f5e5a;
+    --gray-fill:rgba(90,90,86,0.72);
+    --gray-ring:rgba(90,90,86,0.12);
+    --ink:     #1a1917;
+    --muted:   #6b6a66;
+    --faint:   #e8e6e0;
+    --bg:      #f5f3ee;
+    --card:    #ffffff;
+    --border:  #d8d5cc;
+    --accent:  #2d5fa3;
+    --mono: 'DM Mono', monospace;
+    --serif: 'Playfair Display', Georgia, serif;
+  }
+
+  body {
+    font-family: var(--mono);
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  header {
+    background: var(--ink);
+    color: #f5f3ee;
+    padding: 2rem 2.5rem 1.5rem;
+    border-bottom: 3px solid var(--red);
+  }
+
+  header h1 {
+    font-family: var(--serif);
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-bottom: 0.4rem;
+  }
+
+  header p {
+    font-size: 0.72rem;
+    color: #a8a49c;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    min-height: calc(100vh - 100px);
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    background: var(--card);
+    border-right: 1px solid var(--border);
+    padding: 1.5rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .sidebar-title {
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--faint);
+  }
+
+  .slider-block {
+    padding: 0.9rem 0;
+    border-bottom: 1px solid var(--faint);
+  }
+
+  .slider-block:last-of-type { border-bottom: none; }
+
+  .slider-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 0.5rem;
+  }
+
+  .slider-name {
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--ink);
+    letter-spacing: 0.02em;
+  }
+
+  .slider-val {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--accent);
+    min-width: 2rem;
+    text-align: right;
+  }
+
+  .slider-desc {
+    font-size: 0.62rem;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+  }
+
+  input[type=range] {
+    width: 100%;
+    height: 3px;
+    accent-color: var(--accent);
+    cursor: pointer;
+    background: var(--faint);
+    border-radius: 2px;
+    outline: none;
+    border: none;
+  }
+
+  .tick-row {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 3px;
+  }
+
+  .tick-row span {
+    font-size: 0.55rem;
+    color: var(--muted);
+  }
+
+  .formula-box {
+    margin-top: 1rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.75rem 0.9rem;
+  }
+
+  .formula-box .f-title {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 0.4rem;
+  }
+
+  .formula-box .f-eq {
+    font-size: 0.68rem;
+    color: var(--ink);
+    line-height: 1.7;
+  }
+
+  .formula-box .f-eq span {
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .reset-btn {
+    margin-top: 1rem;
+    width: 100%;
+    padding: 0.5rem;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    cursor: pointer;
+    color: var(--muted);
+    transition: all 0.15s;
+  }
+
+  .reset-btn:hover {
+    background: var(--faint);
+    color: var(--ink);
+    border-color: var(--gray);
+  }
+
+  /* ── MAIN ── */
+  .main {
+    padding: 1.5rem 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.9rem 1rem;
+  }
+
+  .stat-card .s-label {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 0.3rem;
+  }
+
+  .stat-card .s-val {
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: var(--ink);
+    font-family: var(--serif);
+  }
+
+  .stat-card .s-sub {
+    font-size: 0.6rem;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .chart-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem 1.5rem 1rem;
+    flex: 1;
+  }
+
+  .chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+  }
+
+  .chart-title {
+    font-family: var(--serif);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .chart-sub {
+    font-size: 0.62rem;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-size: 0.62rem;
+    color: var(--muted);
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .dot-fill {
+    width: 10px; height: 10px; border-radius: 50%;
+  }
+
+  .dot-ring {
+    width: 10px; height: 10px; border-radius: 50%;
+    border: 2px solid currentColor;
+    background: transparent;
+  }
+
+  .chart-wrap {
+    position: relative;
+    width: 100%;
+    height: 440px;
+  }
+
+  .note {
+    font-size: 0.62rem;
+    color: var(--muted);
+    line-height: 1.6;
+    padding: 0.6rem 0.9rem;
+    border-left: 2px solid var(--faint);
+    margin-top: 0.5rem;
+  }
+
+  @media (max-width: 800px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { border-right: none; border-bottom: 1px solid var(--border); }
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .main { padding: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Arms Control Verification Intensity Explorer</h1>
+  <p>AMC Research Sprint · Uppsala University · Alva Myrdal Centre · 2026 — Adjust weights to rerank 31 treaties</p>
+</header>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-title">Weight each variable (0 – 5, step 0.5)</div>
+
+    <div class="slider-block">
+      <div class="slider-label">
+        <span class="slider-name">Mechanism count</span>
+        <span class="slider-val" id="v-count">1.0</span>
+      </div>
+      <div class="slider-desc">Number of distinct verified compliance mechanisms in the treaty (from amcdata_vercom_V2.csv row count per agreement)</div>
+      <input type="range" id="s-count" min="0" max="5" step="0.5" value="1">
+      <div class="tick-row"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
+    </div>
+
+    <div class="slider-block">
+      <div class="slider-label">
+        <span class="slider-name">Access depth</span>
+        <span class="slider-val" id="v-access">1.0</span>
+      </div>
+      <div class="slider-desc">Sum of area_access + facility_access + item_access + item_section_access (0–4 per mechanism), averaged across mechanisms</div>
+      <input type="range" id="s-access" min="0" max="5" step="0.5" value="1">
+      <div class="tick-row"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
+    </div>
+
+    <div class="slider-block">
+      <div class="slider-label">
+        <span class="slider-name">Third-party inspector</span>
+        <span class="slider-val" id="v-third">1.0</span>
+      </div>
+      <div class="slider-desc">% of mechanisms where inspector_type > 0 (independent body, not party-on-party). 0 = countries check each other, 1 = fully independent</div>
+      <input type="range" id="s-third" min="0" max="5" step="0.5" value="1">
+      <div class="tick-row"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
+    </div>
+
+    <div class="slider-block">
+      <div class="slider-label">
+        <span class="slider-name">Agreement-triggered</span>
+        <span class="slider-val" id="v-trigger">1.0</span>
+      </div>
+      <div class="slider-desc">% of mechanisms where trigger_type = 0 (automatic, treaty-scheduled). Higher = harder to evade or delay</div>
+      <input type="range" id="s-trigger" min="0" max="5" step="0.5" value="1">
+      <div class="tick-row"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
+    </div>
+
+    <div class="slider-block">
+      <div class="slider-label">
+        <span class="slider-name">NTM provisions</span>
+        <span class="slider-val" id="v-ntm">1.0</span>
+      </div>
+      <div class="slider-desc">Count of non-interference + non-concealment clauses (ntm_interferene + ntm_concealment). Protects satellite surveillance</div>
+      <input type="range" id="s-ntm" min="0" max="5" step="0.5" value="1">
+      <div class="tick-row"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
+    </div>
+
+    <div class="slider-block">
+      <div class="slider-label">
+        <span class="slider-name">Phase coverage</span>
+        <span class="slider-val" id="v-phase">1.0</span>
+      </div>
+      <div class="slider-desc">Avg number of weapon lifecycle phases verified (development, testing, production, possession, stationing, transfer, use, general)</div>
+      <input type="range" id="s-phase" min="0" max="5" step="0.5" value="1">
+      <div class="tick-row"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
+    </div>
+
+    <div class="formula-box">
+      <div class="f-title">Current formula</div>
+      <div class="f-eq" id="formula-display">
+        score = count×<span id="fw-count">1</span> + access×<span id="fw-access">1</span> + third×<span id="fw-third">1</span> + trigger×<span id="fw-trigger">1</span> + NTM×<span id="fw-ntm">1</span> + phase×<span id="fw-phase">1</span>
+      </div>
+    </div>
+
+    <button class="reset-btn" id="reset-btn">↺ Reset all weights to 1</button>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="s-label">Top treaty</div>
+        <div class="s-val" id="top-treaty" style="font-size:0.9rem;margin-top:2px;">START I</div>
+        <div class="s-sub" id="top-score">Score: 21.35</div>
+      </div>
+      <div class="stat-card">
+        <div class="s-label">High risk treaties</div>
+        <div class="s-val" id="stat-high">22</div>
+        <div class="s-sub">of 31 graphed</div>
+      </div>
+      <div class="stat-card">
+        <div class="s-label">With third-party inspector</div>
+        <div class="s-val" id="stat-third">13</div>
+        <div class="s-sub">of 31 graphed</div>
+      </div>
+      <div class="stat-card">
+        <div class="s-label">Avg score (high risk)</div>
+        <div class="s-val" id="stat-avg-high">—</div>
+        <div class="s-sub">vs low risk: <span id="stat-avg-low">—</span></div>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Verification Intensity by Treaty</div>
+          <div class="chart-sub">Bubble size = mechanism count · Drag sliders to reweight</div>
+        </div>
+        <div class="legend">
+          <div class="legend-item"><span class="dot-fill" style="background:rgba(163,45,45,0.82);"></span> High risk · third-party</div>
+          <div class="legend-item"><span class="dot-ring" style="color:#a32d2d;"></span> High risk · party-on-party</div>
+          <div class="legend-item"><span class="dot-fill" style="background:rgba(90,90,86,0.72);"></span> Low risk · third-party</div>
+          <div class="legend-item"><span class="dot-ring" style="color:#5f5e5a;"></span> Low risk · party-on-party</div>
+        </div>
+      </div>
+      <div class="chart-wrap">
+        <canvas id="mainChart" role="img" aria-label="Interactive bubble scatter chart of arms control treaties. Adjust sliders to change variable weights and see treaty rankings shift."></canvas>
+      </div>
+      <div class="note">
+        <strong>Data source:</strong> AMC Arms Control Agreement Database V2, Alva Myrdal Centre, Uppsala University.
+        Risk classification based on <code>item</code> column (<code>summary_category = 0</code>) in amcdata_weapons_facilities_V2.csv.
+        † = manually coded (JCPOA, Quadripartite Agreement, Brazil-Argentina Coop, Open Skies, CFE Adaptation, BDA Agreement, Sub-Regional Arms Control).
+        97 of 128 agreements have zero verified compliance mechanisms and are excluded.
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+const TREATIES = [
+  {label:"START I",                     year:1991,n:17,third:0,risk:"high",count:17,  access:0.941,tpart:0.0,  trig:0.412,ntm:2.0,phase:1.0,manual:false},
+  {label:"New START Treaty",            year:2010,n:11,third:0,risk:"high",count:11,  access:1.455,tpart:0.0,  trig:0.636,ntm:2.0,phase:1.0,manual:false},
+  {label:"INF",                         year:1987,n:9, third:0,risk:"high",count:9,   access:1.667,tpart:0.0,  trig:0.556,ntm:2.0,phase:1.0,manual:false},
+  {label:"Peaceful Nuclear Explosions", year:1976,n:5, third:0,risk:"high",count:5,   access:2.4,  tpart:0.0,  trig:0.2,  ntm:1.0,phase:1.0,manual:false},
+  {label:"START II",                    year:1993,n:4, third:0,risk:"high",count:4,   access:1.25, tpart:0.0,  trig:0.5,  ntm:2.0,phase:1.0,manual:false},
+  {label:"CWC",                         year:1993,n:4, third:1,risk:"high",count:4,   access:1.5,  tpart:1.0,  trig:0.5,  ntm:0.0,phase:1.0,manual:false},
+  {label:"JCPOA",                       year:2015,n:3, third:1,risk:"high",count:3,   access:2.0,  tpart:1.0,  trig:1.0,  ntm:0.0,phase:1.0,manual:true},
+  {label:"CFE",                         year:1990,n:4, third:0,risk:"low", count:4,   access:2.0,  tpart:0.0,  trig:0.5,  ntm:0.0,phase:1.0,manual:false},
+  {label:"CFE Adaptation",              year:1999,n:5, third:0,risk:"low", count:5,   access:1.0,  tpart:0.0,  trig:0.4,  ntm:0.0,phase:1.0,manual:true},
+  {label:"CTBT",                        year:1996,n:3, third:1,risk:"high",count:3,   access:1.0,  tpart:0.667,trig:0.667,ntm:1.0,phase:1.0,manual:false},
+  {label:"TTBT",                        year:1974,n:3, third:0,risk:"high",count:3,   access:1.333,tpart:0.0,  trig:0.333,ntm:1.0,phase:1.0,manual:false},
+  {label:"BDA Agreement",               year:1990,n:5, third:0,risk:"low", count:5,   access:0.0,  tpart:0.0,  trig:0.4,  ntm:0.0,phase:1.0,manual:true},
+  {label:"ABM MOU",                     year:1997,n:2, third:0,risk:"high",count:2,   access:0.5,  tpart:0.0,  trig:0.5,  ntm:2.0,phase:1.0,manual:false},
+  {label:"Quadripartite Agreement",     year:1991,n:1, third:1,risk:"high",count:1,   access:2.0,  tpart:1.0,  trig:0.0,  ntm:0.0,phase:2.0,manual:true},
+  {label:"Agreed Framework",            year:1994,n:2, third:1,risk:"high",count:2,   access:1.0,  tpart:1.0,  trig:0.5,  ntm:0.0,phase:1.0,manual:false},
+  {label:"ABM Treaty",                  year:1972,n:1, third:0,risk:"high",count:1,   access:0.0,  tpart:0.0,  trig:1.0,  ntm:2.0,phase:1.0,manual:false},
+  {label:"Outer Space Treaty",          year:1967,n:1, third:0,risk:"high",count:1,   access:3.0,  tpart:0.0,  trig:0.0,  ntm:0.0,phase:1.0,manual:false},
+  {label:"Treaty of Tlatelolco",        year:1967,n:2, third:1,risk:"high",count:2,   access:1.0,  tpart:1.0,  trig:0.0,  ntm:0.0,phase:1.0,manual:false},
+  {label:"Open Skies",                  year:1992,n:1, third:0,risk:"low", count:1,   access:2.0,  tpart:0.0,  trig:1.0,  ntm:0.0,phase:1.0,manual:true},
+  {label:"Brazil-Argentina Coop",       year:1980,n:1, third:1,risk:"high",count:1,   access:2.0,  tpart:1.0,  trig:0.0,  ntm:0.0,phase:1.0,manual:true},
+  {label:"Interim Agreement",           year:1972,n:1, third:0,risk:"high",count:1,   access:0.0,  tpart:0.0,  trig:1.0,  ntm:2.0,phase:1.0,manual:false},
+  {label:"Stockholm Document",          year:1986,n:2, third:0,risk:"low", count:2,   access:2.0,  tpart:0.0,  trig:0.0,  ntm:0.0,phase:1.0,manual:false},
+  {label:"Antarctic Treaty",            year:1959,n:2, third:0,risk:"high",count:2,   access:1.5,  tpart:0.0,  trig:0.0,  ntm:0.0,phase:1.0,manual:false},
+  {label:"Seabed Treaty",               year:1971,n:2, third:0,risk:"high",count:2,   access:1.5,  tpart:0.0,  trig:0.0,  ntm:0.0,phase:1.0,manual:false},
+  {label:"Treaty of Rarotonga",         year:1985,n:1, third:1,risk:"high",count:1,   access:1.0,  tpart:1.0,  trig:0.0,  ntm:0.0,phase:1.0,manual:false},
+  {label:"BWC",                         year:1972,n:1, third:1,risk:"high",count:1,   access:1.0,  tpart:1.0,  trig:0.0,  ntm:0.0,phase:1.0,manual:false},
+  {label:"ENMOD",                       year:1977,n:1, third:1,risk:"low", count:1,   access:1.0,  tpart:1.0,  trig:0.0,  ntm:0.0,phase:1.0,manual:false},
+  {label:"Pelindaba Treaty",            year:1996,n:1, third:1,risk:"high",count:1,   access:1.0,  tpart:1.0,  trig:0.0,  ntm:0.0,phase:1.0,manual:false},
+  {label:"Bangkok Treaty",              year:1995,n:1, third:1,risk:"high",count:1,   access:1.0,  tpart:1.0,  trig:0.0,  ntm:0.0,phase:1.0,manual:false},
+  {label:"Ottawa Treaty",               year:1997,n:1, third:1,risk:"low", count:1,   access:1.0,  tpart:1.0,  trig:0.0,  ntm:0.0,phase:1.0,manual:false},
+  {label:"Sub-Regional Arms Control",   year:1996,n:2, third:0,risk:"low", count:2,   access:0.0,  tpart:0.0,  trig:0.0,  ntm:0.0,phase:1.0,manual:true},
+];
+
+function getWeights() {
+  return {
+    count:  parseFloat(document.getElementById('s-count').value),
+    access: parseFloat(document.getElementById('s-access').value),
+    third:  parseFloat(document.getElementById('s-third').value),
+    trigger:parseFloat(document.getElementById('s-trigger').value),
+    ntm:    parseFloat(document.getElementById('s-ntm').value),
+    phase:  parseFloat(document.getElementById('s-phase').value),
+  };
+}
+
+function computeScore(t, w) {
+  return t.count * w.count + t.access * w.access + t.tpart * w.third +
+         t.trig * w.trigger + t.ntm * w.ntm + t.phase * w.phase;
+}
+
+function buildDatasets(w) {
+  const groups = [
+    { risk:'high', third:0, bg:'rgba(163,45,45,0.82)', bc:'rgba(163,45,45,0.95)' },
+    { risk:'high', third:1, bg:'rgba(163,45,45,0.10)', bc:'rgba(163,45,45,0.95)' },
+    { risk:'low',  third:0, bg:'rgba(90,90,86,0.72)',  bc:'rgba(90,90,86,0.95)'  },
+    { risk:'low',  third:1, bg:'rgba(90,90,86,0.10)',  bc:'rgba(90,90,86,0.95)'  },
+  ];
+  return groups.map(g => ({
+    label: `${g.risk}-${g.third}`,
+    data: TREATIES
+      .filter(t => t.risk === g.risk && t.third === g.third)
+      .map(t => ({
+        x: t.year,
+        y: Math.round(computeScore(t, w) * 100) / 100,
+        r: Math.max(4, Math.sqrt(t.n) * 6),
+        label: t.label + (t.manual ? ' †' : ''),
+        n: t.n,
+        risk: t.risk,
+        third: t.third,
+      })),
+    backgroundColor: g.bg,
+    borderColor: g.bc,
+    borderWidth: 2.5,
+  }));
+}
+
+function updateStats(w) {
+  const scored = TREATIES.map(t => ({ ...t, score: computeScore(t, w) }));
+  const top = scored.reduce((a, b) => a.score > b.score ? a : b);
+  document.getElementById('top-treaty').textContent = top.label;
+  document.getElementById('top-score').textContent = `Score: ${top.score.toFixed(2)}`;
+
+  const high = scored.filter(t => t.risk === 'high');
+  const low  = scored.filter(t => t.risk === 'low');
+  const avgH = high.reduce((s,t) => s + t.score, 0) / (high.length || 1);
+  const avgL = low.reduce((s,t)  => s + t.score, 0) / (low.length  || 1);
+  document.getElementById('stat-avg-high').textContent = avgH.toFixed(1);
+  document.getElementById('stat-avg-low').textContent  = avgL.toFixed(1);
+}
+
+function updateFormula(w) {
+  ['count','access','third','trigger','ntm','phase'].forEach(k => {
+    document.getElementById(`fw-${k === 'trigger' ? 'trigger' : k}`).textContent = w[k];
+  });
+  document.getElementById('fw-trigger').textContent = w.trigger;
+}
+
+const ctx = document.getElementById('mainChart').getContext('2d');
+const chart = new Chart(ctx, {
+  type: 'bubble',
+  data: { datasets: buildDatasets(getWeights()) },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: { duration: 300 },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: ctx => [
+            ` ${ctx.raw.label}`,
+            ` Score: ${ctx.raw.y.toFixed(2)}`,
+            ` Mechanisms: ${ctx.raw.n}`,
+            ` Risk: ${ctx.raw.risk}`,
+            ` Inspector: ${ctx.raw.third ? 'third-party' : 'party-on-party'}`,
+          ]
+        }
+      }
+    },
+    scales: {
+      x: {
+        title: { display: true, text: 'Year signed', font: { size: 12, family: "'DM Mono', monospace" } },
+        grid: { color: 'rgba(180,175,165,0.25)' },
+        ticks: { font: { size: 11, family: "'DM Mono', monospace" } },
+        min: 1955, max: 2020,
+      },
+      y: {
+        title: { display: true, text: 'Composite verification intensity score', font: { size: 12, family: "'DM Mono', monospace" } },
+        grid: { color: 'rgba(180,175,165,0.25)' },
+        ticks: { font: { size: 11, family: "'DM Mono', monospace" } },
+        min: 0,
+      }
+    }
+  }
+});
+
+function refresh() {
+  const w = getWeights();
+  chart.data.datasets = buildDatasets(w);
+  chart.update();
+  updateStats(w);
+  updateFormula(w);
+  ['count','access','third','trigger','ntm','phase'].forEach(k => {
+    const sid = k === 'count' ? 's-count' : k === 'access' ? 's-access' : k === 'third' ? 's-third' : k === 'trigger' ? 's-trigger' : k === 'ntm' ? 's-ntm' : 's-phase';
+    const vid = k === 'count' ? 'v-count' : k === 'access' ? 'v-access' : k === 'third' ? 'v-third' : k === 'trigger' ? 'v-trigger' : k === 'ntm' ? 'v-ntm' : 'v-phase';
+    document.getElementById(vid).textContent = parseFloat(document.getElementById(sid).value).toFixed(1);
+  });
+}
+
+['s-count','s-access','s-third','s-trigger','s-ntm','s-phase'].forEach(id => {
+  document.getElementById(id).addEventListener('input', refresh);
+});
+
+document.getElementById('reset-btn').addEventListener('click', () => {
+  ['s-count','s-access','s-third','s-trigger','s-ntm','s-phase'].forEach(id => {
+    document.getElementById(id).value = 1;
+  });
+  refresh();
+});
+
+updateStats(getWeights());
+updateFormula(getWeights());
+</script>
+</body>
+</html>
