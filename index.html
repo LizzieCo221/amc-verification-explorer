@@ -353,54 +353,54 @@
 <div class="layout">
 
   <aside class="sidebar">
-    <div class="sidebar-title">Adjust variable weights (0 – 5, step 0.5)</div>
+    <div class="sidebar-title">Weight each variable (0 – 5, step 0.5)</div>
 
     <div class="slider-block">
       <div class="slider-label">
-        <span class="slider-name">No. of inspection mechanisms</span>
+        <span class="slider-name">Mechanism count</span>
         <span class="slider-val" id="v-count">2.0</span>
       </div>
-      <div class="slider-desc">How many separate inspection or verification procedures does the treaty establish? More mechanisms generally means more opportunities to catch violations.</div>
+      <div class="slider-desc">Number of distinct verified compliance mechanisms in the treaty (row count per agreement in amcdata_vercom_V2.csv)</div>
       <input type="range" id="s-count" min="0" max="5" step="0.5" value="2">
       <div class="tick-row"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
     </div>
 
     <div class="slider-block">
       <div class="slider-label">
-        <span class="slider-name">Depth of physical access</span>
+        <span class="slider-name">Access depth</span>
         <span class="slider-val" id="v-access">2.0</span>
       </div>
-      <div class="slider-desc">How far can inspectors actually go? This measures whether they can access general areas, enter specific facilities, and physically examine the weapons or equipment themselves.</div>
+      <div class="slider-desc">Sum of area_access + facility_access + item_access + item_section_access (0–4 per mechanism), averaged across mechanisms</div>
       <input type="range" id="s-access" min="0" max="5" step="0.5" value="2">
       <div class="tick-row"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
     </div>
 
     <div class="slider-block">
       <div class="slider-label">
-        <span class="slider-name">Independent inspector</span>
+        <span class="slider-name">Third-party inspector</span>
         <span class="slider-val" id="v-third">0.5</span>
       </div>
-      <div class="slider-desc">Who does the checking? A score of 0 means countries inspect each other (less impartial). A score of 1 means an independent international body — like the IAEA or OPCW — carries out verification.</div>
+      <div class="slider-desc">Share of mechanisms where inspector_type > 0 (independent body). 0 = countries check each other, 1 = fully independent</div>
       <input type="range" id="s-third" min="0" max="5" step="0.5" value="0.5">
       <div class="tick-row"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
     </div>
 
     <div class="slider-block">
       <div class="slider-label">
-        <span class="slider-name">Automatic triggers</span>
+        <span class="slider-name">Agreement-triggered</span>
         <span class="slider-val" id="v-trigger">1.5</span>
       </div>
-      <div class="slider-desc">Do inspections happen on a fixed schedule written into the treaty, or only when someone requests one? Automatic triggers are harder to delay or block.</div>
+      <div class="slider-desc">Share of mechanisms where trigger_type = 0 (automatic, treaty-scheduled). Higher = harder to evade or delay inspections</div>
       <input type="range" id="s-trigger" min="0" max="5" step="0.5" value="1.5">
       <div class="tick-row"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
     </div>
 
     <div class="slider-block">
       <div class="slider-label">
-        <span class="slider-name">Satellite surveillance protection</span>
+        <span class="slider-name">NTM provisions</span>
         <span class="slider-val" id="v-ntm">1.0</span>
       </div>
-      <div class="slider-desc">Does the treaty explicitly forbid countries from jamming or hiding weapons from surveillance satellites? These clauses protect each side's ability to monitor compliance from space.</div>
+      <div class="slider-desc">Count of non-interference + non-concealment clauses (ntm_interferene + ntm_concealment). Protects satellite surveillance capacity</div>
       <input type="range" id="s-ntm" min="0" max="5" step="0.5" value="1">
       <div class="tick-row"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
     </div>
@@ -410,7 +410,7 @@
         <span class="slider-name">Phase coverage</span>
         <span class="slider-val" id="v-phase">1.5</span>
       </div>
-      <div class="slider-desc">How much of the weapon's lifecycle is actually verified? A treaty might only check stockpiles, or it might cover the full chain — from development and production through to transfer and disposal.</div>
+      <div class="slider-desc">Average number of weapon lifecycle phases verified (development, testing, production, possession, stationing, transfer, use, general)</div>
       <input type="range" id="s-phase" min="0" max="5" step="0.5" value="1.5">
       <div class="tick-row"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
     </div>
@@ -418,7 +418,7 @@
     <div class="formula-box">
       <div class="f-title">Our weighting — variables normalized 0–1 (adjust sliders to explore)</div>
       <div class="f-eq">
-        score = inspections×<span id="fw-count">2</span> + access×<span id="fw-access">2</span> + independence×<span id="fw-third">0.5</span> + auto-trigger×<span id="fw-trigger">1.5</span> + satellite×<span id="fw-ntm">1</span> + phase×<span id="fw-phase">1.5</span>
+        score = norm(count)×<span id="fw-count">2</span> + norm(access)×<span id="fw-access">2</span> + norm(third)×<span id="fw-third">0.5</span> + norm(trigger)×<span id="fw-trigger">1.5</span> + norm(NTM)×<span id="fw-ntm">1</span> + norm(phase)×<span id="fw-phase">1.5</span>
       </div>
     </div>
 
@@ -458,9 +458,7 @@
           <div class="chart-title">Verification Intensity by Treaty</div>
           <div class="chart-sub">Bubble size = mechanism count · scores normalized 0–100 · drag sliders to reweight</div>
         </div>
-        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
-          <div style="font-size:0.6rem;color:var(--muted);letter-spacing:0.04em;text-align:right;">Click to show or hide groups</div>
-          <div class="legend">
+        <div class="legend">
           <button class="filter-btn" id="f-high-third" onclick="toggleFilter('high',1)">
             <span class="dot-fill" style="background:rgba(180,20,20,0.90);display:inline-block;width:10px;height:10px;border-radius:50%;flex-shrink:0;"></span> High risk · third-party
           </button>
@@ -473,9 +471,10 @@
           <button class="filter-btn" id="f-low-pop" onclick="toggleFilter('low',0)">
             <span class="dot-ring" style="color:#1454b4;display:inline-block;width:10px;height:10px;border-radius:50%;border:2px solid #1454b4;flex-shrink:0;"></span> Low risk · party-to-party
           </button>
-          </div>
         </div>
       </div>
+
+      <div class="chart-wrap">
         <canvas id="mainChart" role="img" aria-label="Interactive bubble scatter chart of 31 arms control treaties. X-axis is year signed, Y-axis is normalized composite verification intensity score 0 to 100. Adjust sliders to reweight variables."></canvas>
       </div>
 
@@ -484,6 +483,7 @@
         <ul>
           <li>AMC Arms Control Agreement Database V2 — Alva Myrdal Centre, Uppsala University</li>
           <li>Risk classification derived from the <code>item</code> column (<code>summary_category = 0</code>) in amcdata_weapons_facilities_V2.csv using keyword matching on nuclear, chemical, biological, ICBM, SLBM, ballistic missile, and related terms</li>
+          <li>All six variables normalized to 0–1 before weighting, then rescaled to 0–100. Each slider multiplies the normalized variable by a weight of 0–5</li>
           <li>† Manually coded (no real item rows in dataset): JCPOA, Quadripartite Agreement, Brazil-Argentina Coop → high risk; Open Skies, CFE Adaptation, BDA Agreement, Sub-Regional Arms Control → low risk</li>
           <li>97 of 128 agreements have zero verified compliance mechanisms and are excluded from this visualization</li>
         </ul>
