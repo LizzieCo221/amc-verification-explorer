@@ -501,15 +501,17 @@ function norm(val, key) {
   return range === 0 ? 0 : (val - MIN[key]) / range;
 }
 
-function computeScore(t, w) {
-  return norm(t.count, 'count')  * w.count  +
-         norm(t.access,'access') * w.access +
-         norm(t.tpart, 'tpart')  * w.third  +
-         norm(t.trig,  'trig')   * w.trigger+
-         norm(t.ntm,   'ntm')    * w.ntm    +
-         norm(t.phase, 'phase')  * w.phase;
-}
 
+function computeScore(t, w) {
+  const raw = norm(t.count, 'count')  * w.count  +
+              norm(t.access,'access') * w.access +
+              norm(t.tpart, 'tpart')  * w.third  +
+              norm(t.trig,  'trig')   * w.trigger+
+              norm(t.ntm,   'ntm')    * w.ntm    +
+              norm(t.phase, 'phase')  * w.phase;
+  return (raw / 6) * 100;
+}
+ 
 function buildDatasets(w) {
   const groups = [
     { risk:'high', third:0, bg:'rgba(163,45,45,0.82)', bc:'rgba(163,45,45,0.95)' },
