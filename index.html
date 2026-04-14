@@ -456,7 +456,7 @@
       <div class="chart-header">
         <div>
           <div class="chart-title">Verification Intensity by Treaty</div>
-          <div class="chart-sub">Bubble size = mechanism count · scores normalized 0–100 · drag sliders to reweight</div>
+       <div class="chart-sub">Bubble size = mechanism count · scores normalized 0–100 · drag sliders to reweight · click the legend buttons to filter by risk tier or inspection type</div>
         </div>
         <div class="legend">
           <button class="filter-btn" id="f-high-third" onclick="toggleFilter('high',1)">
@@ -483,7 +483,7 @@
         <ul>
           <li>AMC Arms Control Agreement Database V2 — Alva Myrdal Centre, Uppsala University</li>
           <li>Risk classification derived from the <code>item</code> column (<code>summary_category = 0</code>) in amcdata_weapons_facilities_V2.csv using keyword matching on nuclear, chemical, biological, ICBM, SLBM, ballistic missile, and related terms</li>
-          <li>All six variables normalized to 0–1 before weighting, then rescaled to 0–100. Each slider multiplies the normalized variable by a weight of 0–5</li>
+       
           <li>† Manually coded (no real item rows in dataset): JCPOA, Quadripartite Agreement, Brazil-Argentina Coop → high risk; Open Skies, CFE Adaptation, BDA Agreement, Sub-Regional Arms Control → low risk</li>
           <li>97 of 128 agreements have zero verified compliance mechanisms and are excluded from this visualization</li>
         </ul>
