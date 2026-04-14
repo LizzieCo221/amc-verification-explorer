@@ -415,18 +415,18 @@
         <div class="s-label">Avg score — high risk</div>
         <div class="s-val" id="stat-avg-high">—</div>
         <div class="s-sub">nuclear, chemical, biological, strategic</div>
-        <div class="s-sub">excl. top outlier: <span id="stat-high-no-outlier">—</span></div>
+        <div class="s-sub">excl. IQR outliers: <span id="stat-high-no-outlier">—</span></div>
       </div>
       <div class="stat-card low-card">
         <div class="s-label">Avg score — low risk</div>
         <div class="s-val" id="stat-avg-low">—</div>
         <div class="s-sub">conventional / other</div>
-        <div class="s-sub">excl. top outlier: <span id="stat-low-no-outlier">—</span></div>
+        <div class="s-sub">excl. IQR outliers: <span id="stat-low-no-outlier">—</span></div>
       </div>
       <div class="stat-card diff-card">
         <div class="s-label">High − low difference</div>
         <div class="s-val" id="stat-diff">—</div>
-        <div class="s-sub">gap excl. outliers: <span id="stat-no-outlier">—</span></div>
+        <div class="s-sub">gap excl. IQR outliers: <span id="stat-no-outlier">—</span></div>
       </div>
     </div>
 
@@ -570,13 +570,20 @@ function updateStats(w) {
   document.getElementById('stat-avg-low').textContent  = avgL.toFixed(2);
   document.getElementById('stat-diff').textContent     = Math.abs(avgH - avgL).toFixed(2);
 
-  // Per-group averages excluding each group's top outlier
-  const highSorted = [...high].sort((a,b) => b.score - a.score);
-  const lowSorted  = [...low].sort((a,b)  => b.score - a.score);
-  const highTrimmed = highSorted.slice(1);
-  const lowTrimmed  = lowSorted.slice(1);
-  const avgHno = highTrimmed.reduce((s,t) => s + t.score, 0) / (highTrimmed.length || 1);
-  const avgLno = lowTrimmed.reduce((s,t)  => s + t.score, 0) / (lowTrimmed.length  || 1);
+  // IQR outlier removal (1.5 × IQR rule, same as box plots)
+  function iqrFilter(arr) {
+    const s = [...arr].sort((a,b) => a - b);
+    const q1 = s[Math.floor(s.length * 0.25)];
+    const q3 = s[Math.floor(s.length * 0.75)];
+    const iqr = q3 - q1;
+    return arr.filter(v => v >= q1 - 1.5*iqr && v <= q3 + 1.5*iqr);
+  }
+  const highScores   = high.map(t => t.score);
+  const lowScores    = low.map(t => t.score);
+  const highFiltered = iqrFilter(highScores);
+  const lowFiltered  = iqrFilter(lowScores);
+  const avgHno = highFiltered.reduce((s,v) => s+v, 0) / (highFiltered.length || 1);
+  const avgLno = lowFiltered.reduce((s,v)  => s+v, 0) / (lowFiltered.length  || 1);
   document.getElementById('stat-high-no-outlier').textContent = avgHno.toFixed(2);
   document.getElementById('stat-low-no-outlier').textContent  = avgLno.toFixed(2);
   document.getElementById('stat-no-outlier').textContent      = Math.abs(avgHno - avgLno).toFixed(2);
