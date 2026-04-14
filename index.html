@@ -38,7 +38,7 @@
   header {
     background: var(--ink);
     color: #f5f3ee;
-    padding: 2rem 4rem 1.5rem;
+    padding: 2rem 1.25rem 1.5rem;
     border-bottom: 3px solid var(--red);
   }
 
@@ -312,6 +312,28 @@
     padding-left: 0.4rem;
   }
 
+  .filter-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    color: var(--muted);
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 4px 9px;
+    cursor: pointer;
+    transition: all 0.15s;
+    opacity: 1;
+    white-space: nowrap;
+  }
+  .filter-btn:hover { background: var(--faint); }
+  .filter-btn.inactive {
+    opacity: 0.3;
+    text-decoration: line-through;
+  }
+
   @media (max-width: 800px) {
     .layout { grid-template-columns: 1fr; }
     .sidebar { border-right: none; border-bottom: 1px solid var(--border); }
@@ -336,40 +358,40 @@
     <div class="slider-block">
       <div class="slider-label">
         <span class="slider-name">Mechanism count</span>
-        <span class="slider-val" id="v-count">1.0</span>
+        <span class="slider-val" id="v-count">2.0</span>
       </div>
       <div class="slider-desc">Number of distinct verified compliance mechanisms in the treaty (row count per agreement in amcdata_vercom_V2.csv)</div>
-      <input type="range" id="s-count" min="0" max="5" step="0.5" value="1">
+      <input type="range" id="s-count" min="0" max="5" step="0.5" value="2">
       <div class="tick-row"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
     </div>
 
     <div class="slider-block">
       <div class="slider-label">
         <span class="slider-name">Access depth</span>
-        <span class="slider-val" id="v-access">1.0</span>
+        <span class="slider-val" id="v-access">2.0</span>
       </div>
       <div class="slider-desc">Sum of area_access + facility_access + item_access + item_section_access (0–4 per mechanism), averaged across mechanisms</div>
-      <input type="range" id="s-access" min="0" max="5" step="0.5" value="1">
+      <input type="range" id="s-access" min="0" max="5" step="0.5" value="2">
       <div class="tick-row"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
     </div>
 
     <div class="slider-block">
       <div class="slider-label">
         <span class="slider-name">Third-party inspector</span>
-        <span class="slider-val" id="v-third">1.0</span>
+        <span class="slider-val" id="v-third">0.5</span>
       </div>
       <div class="slider-desc">Share of mechanisms where inspector_type > 0 (independent body). 0 = countries check each other, 1 = fully independent</div>
-      <input type="range" id="s-third" min="0" max="5" step="0.5" value="1">
+      <input type="range" id="s-third" min="0" max="5" step="0.5" value="0.5">
       <div class="tick-row"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
     </div>
 
     <div class="slider-block">
       <div class="slider-label">
         <span class="slider-name">Agreement-triggered</span>
-        <span class="slider-val" id="v-trigger">1.0</span>
+        <span class="slider-val" id="v-trigger">1.5</span>
       </div>
       <div class="slider-desc">Share of mechanisms where trigger_type = 0 (automatic, treaty-scheduled). Higher = harder to evade or delay inspections</div>
-      <input type="range" id="s-trigger" min="0" max="5" step="0.5" value="1">
+      <input type="range" id="s-trigger" min="0" max="5" step="0.5" value="1.5">
       <div class="tick-row"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
     </div>
 
@@ -386,21 +408,21 @@
     <div class="slider-block">
       <div class="slider-label">
         <span class="slider-name">Phase coverage</span>
-        <span class="slider-val" id="v-phase">1.0</span>
+        <span class="slider-val" id="v-phase">1.5</span>
       </div>
       <div class="slider-desc">Average number of weapon lifecycle phases verified (development, testing, production, possession, stationing, transfer, use, general)</div>
-      <input type="range" id="s-phase" min="0" max="5" step="0.5" value="1">
+      <input type="range" id="s-phase" min="0" max="5" step="0.5" value="1.5">
       <div class="tick-row"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
     </div>
 
     <div class="formula-box">
-      <div class="f-title">Current formula (all variables normalized 0–1)</div>
+      <div class="f-title">Our weighting — variables normalized 0–1 (adjust sliders to explore)</div>
       <div class="f-eq">
-        score = norm(count)×<span id="fw-count">1</span> + norm(access)×<span id="fw-access">1</span> + norm(third)×<span id="fw-third">1</span> + norm(trigger)×<span id="fw-trigger">1</span> + norm(NTM)×<span id="fw-ntm">1</span> + norm(phase)×<span id="fw-phase">1</span>
+        score = norm(count)×<span id="fw-count">2</span> + norm(access)×<span id="fw-access">2</span> + norm(third)×<span id="fw-third">0.5</span> + norm(trigger)×<span id="fw-trigger">1.5</span> + norm(NTM)×<span id="fw-ntm">1</span> + norm(phase)×<span id="fw-phase">1.5</span>
       </div>
     </div>
 
-    <button class="reset-btn" id="reset-btn">↺ Reset all weights to 1</button>
+    <button class="reset-btn" id="reset-btn">↺ Reset to our weights</button>
   </aside>
 
   <main class="main">
@@ -437,10 +459,18 @@
           <div class="chart-sub">Bubble size = mechanism count · scores normalized 0–100 · drag sliders to reweight</div>
         </div>
         <div class="legend">
-          <div class="legend-item"><span class="dot-fill" style="background:rgba(180,20,20,0.90);"></span> High risk · third-party</div>
-          <div class="legend-item"><span class="dot-ring" style="color:#b41414;"></span> High risk · party-on-party</div>
-          <div class="legend-item"><span class="dot-fill" style="background:rgba(20,84,180,0.85);"></span> Low risk · third-party</div>
-          <div class="legend-item"><span class="dot-ring" style="color:#1454b4;"></span> Low risk · party-on-party</div>
+          <button class="filter-btn" id="f-high-third" onclick="toggleFilter('high',1)">
+            <span class="dot-fill" style="background:rgba(180,20,20,0.90);display:inline-block;width:10px;height:10px;border-radius:50%;flex-shrink:0;"></span> High risk · third-party
+          </button>
+          <button class="filter-btn" id="f-high-pop" onclick="toggleFilter('high',0)">
+            <span class="dot-ring" style="color:#b41414;display:inline-block;width:10px;height:10px;border-radius:50%;border:2px solid #b41414;flex-shrink:0;"></span> High risk · party-to-party
+          </button>
+          <button class="filter-btn" id="f-low-third" onclick="toggleFilter('low',1)">
+            <span class="dot-fill" style="background:rgba(20,84,180,0.85);display:inline-block;width:10px;height:10px;border-radius:50%;flex-shrink:0;"></span> Low risk · third-party
+          </button>
+          <button class="filter-btn" id="f-low-pop" onclick="toggleFilter('low',0)">
+            <span class="dot-ring" style="color:#1454b4;display:inline-block;width:10px;height:10px;border-radius:50%;border:2px solid #1454b4;flex-shrink:0;"></span> Low risk · party-to-party
+          </button>
         </div>
       </div>
 
@@ -530,6 +560,18 @@ function computeScore(t, w) {
   return (raw / totalWeight) * 100;
 }
 
+const FILTERS = { high1: true, high0: true, low1: true, low0: true };
+
+function toggleFilter(risk, third) {
+  const key = `${risk}${third}`;
+  FILTERS[key] = !FILTERS[key];
+  const btnId = risk === 'high'
+    ? (third === 1 ? 'f-high-third' : 'f-high-pop')
+    : (third === 1 ? 'f-low-third'  : 'f-low-pop');
+  document.getElementById(btnId).classList.toggle('inactive', !FILTERS[key]);
+  refresh();
+}
+
 function buildDatasets(w) {
  const groups = [
     { risk:'high', third:0, bg:'rgba(180,20,20,0.12)',  bc:'rgba(180,20,20,1.0)'  },
@@ -537,23 +579,26 @@ function buildDatasets(w) {
     { risk:'low',  third:0, bg:'rgba(20,84,180,0.12)',  bc:'rgba(20,84,180,1.0)'  },
     { risk:'low',  third:1, bg:'rgba(20,84,180,0.85)',  bc:'rgba(20,84,180,1.0)'  },
   ];
-  return groups.map(g => ({
-    label: `${g.risk}-${g.third}`,
-    data: TREATIES
-      .filter(t => t.risk === g.risk && t.third === g.third)
-      .map(t => ({
-        x: t.year,
-        y: Math.round(computeScore(t, w) * 100) / 100,
-        r: Math.max(4, Math.sqrt(t.n) * 6),
-        label: '    ' + t.label + (t.manual ? ' †' : ''),
-        n: t.n,
-        risk: t.risk,
-        third: t.third,
-      })),
-    backgroundColor: g.bg,
-    borderColor: g.bc,
-    borderWidth: 2.5,
-  }));
+  return groups.map(g => {
+    const key = `${g.risk}${g.third}`;
+    return {
+      label: `${g.risk}-${g.third}`,
+      data: FILTERS[key] ? TREATIES
+        .filter(t => t.risk === g.risk && t.third === g.third)
+        .map(t => ({
+          x: t.year,
+          y: Math.round(computeScore(t, w) * 100) / 100,
+          r: Math.max(4, Math.sqrt(t.n) * 6),
+          label: '    ' + t.label + (t.manual ? ' †' : ''),
+          n: t.n,
+          risk: t.risk,
+          third: t.third,
+        })) : [],
+      backgroundColor: g.bg,
+      borderColor: g.bc,
+      borderWidth: 2.5,
+    };
+  });
 }
 
 function updateStats(w) {
@@ -624,7 +669,7 @@ const chart = new Chart(ctx, {
             `    Score: ${ctx.raw.y.toFixed(2)} / 100`,
             `    Mechanisms: ${ctx.raw.n}`,
             `    Risk tier: ${ctx.raw.risk}`,
-            `    Inspector: ${ctx.raw.third ? 'third-party' : 'party-on-party'}`,
+            `    Inspector: ${ctx.raw.third ? 'third-party' : 'party-to-party'}`,
           ]
         }
       }
@@ -667,8 +712,9 @@ function refresh() {
 });
 
 document.getElementById('reset-btn').addEventListener('click', () => {
-  ['s-count','s-access','s-third','s-trigger','s-ntm','s-phase'].forEach(id => {
-    document.getElementById(id).value = 1;
+  const teamWeights = { 's-count':'2', 's-access':'2', 's-third':'0.5', 's-trigger':'1.5', 's-ntm':'1', 's-phase':'1.5' };
+  Object.entries(teamWeights).forEach(([id, val]) => {
+    document.getElementById(id).value = val;
   });
   refresh();
 });
