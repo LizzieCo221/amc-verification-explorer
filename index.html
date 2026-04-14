@@ -531,11 +531,11 @@ function computeScore(t, w) {
 }
 
 function buildDatasets(w) {
-  const groups = [
-    { risk:'high', third:0, bg:'rgba(180,20,20,0.90)',  bc:'rgba(180,20,20,1.0)'  },
-    { risk:'high', third:1, bg:'rgba(180,20,20,0.12)',  bc:'rgba(180,20,20,1.0)'  },
-    { risk:'low',  third:0, bg:'rgba(20,84,180,0.85)',  bc:'rgba(20,84,180,1.0)'  },
-    { risk:'low',  third:1, bg:'rgba(20,84,180,0.12)',  bc:'rgba(20,84,180,1.0)'  },
+ const groups = [
+    { risk:'high', third:0, bg:'rgba(180,20,20,0.12)',  bc:'rgba(180,20,20,1.0)'  },
+    { risk:'high', third:1, bg:'rgba(180,20,20,0.90)',  bc:'rgba(180,20,20,1.0)'  },
+    { risk:'low',  third:0, bg:'rgba(20,84,180,0.12)',  bc:'rgba(20,84,180,1.0)'  },
+    { risk:'low',  third:1, bg:'rgba(20,84,180,0.85)',  bc:'rgba(20,84,180,1.0)'  },
   ];
   return groups.map(g => ({
     label: `${g.risk}-${g.third}`,
