@@ -318,28 +318,6 @@
     .stats-row { grid-template-columns: repeat(2, 1fr); }
     .main { padding: 1rem; }
   }
-
- .filter-btn {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-family: var(--mono);
-  font-size: 0.62rem;
-  color: var(--muted);
-  background: transparent;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 3px 8px;
-  cursor: pointer;
-  transition: all 0.15s;
-  opacity: 1;
-}
-.filter-btn:hover { background: var(--faint); }
-.filter-btn.inactive {
-  opacity: 0.35;
-  text-decoration: line-through;
-}
- 
 </style>
 </head>
 <body>
@@ -458,20 +436,12 @@
           <div class="chart-title">Verification Intensity by Treaty</div>
           <div class="chart-sub">Bubble size = mechanism count · scores normalized 0–100 · drag sliders to reweight</div>
         </div>
-      <div class="legend">
-  <button class="filter-btn active" id="f-high-third" onclick="toggleFilter('high',1)">
-    <span class="dot-fill" style="background:rgba(180,20,20,0.90);"></span> High risk · third-party
-  </button>
-  <button class="filter-btn active" id="f-high-pop" onclick="toggleFilter('high',0)">
-    <span class="dot-ring" style="color:#b41414;"></span> High risk · party-on-party
-  </button>
-  <button class="filter-btn active" id="f-low-third" onclick="toggleFilter('low',1)">
-    <span class="dot-fill" style="background:rgba(20,84,180,0.85);"></span> Low risk · third-party
-  </button>
-  <button class="filter-btn active" id="f-low-pop" onclick="toggleFilter('low',0)">
-    <span class="dot-ring" style="color:#1454b4;"></span> Low risk · party-on-party
-  </button>
-</div>
+        <div class="legend">
+          <div class="legend-item"><span class="dot-fill" style="background:rgba(180,20,20,0.90);"></span> High risk · third-party</div>
+          <div class="legend-item"><span class="dot-ring" style="color:#b41414;"></span> High risk · party-on-party</div>
+          <div class="legend-item"><span class="dot-fill" style="background:rgba(20,84,180,0.85);"></span> Low risk · third-party</div>
+          <div class="legend-item"><span class="dot-ring" style="color:#1454b4;"></span> Low risk · party-on-party</div>
+        </div>
       </div>
 
       <div class="chart-wrap">
@@ -569,9 +539,8 @@ function buildDatasets(w) {
   ];
   return groups.map(g => ({
     label: `${g.risk}-${g.third}`,
-const key = `${g.risk}${g.third}`;
-data: TREATIES
-  .filter(t => t.risk === g.risk && t.third === g.third && FILTERS[key])
+    data: TREATIES
+      .filter(t => t.risk === g.risk && t.third === g.third)
       .map(t => ({
         x: t.year,
         y: Math.round(computeScore(t, w) * 100) / 100,
@@ -692,17 +661,7 @@ function refresh() {
   updateFormula(w);
   updateSliderLabels(w);
 }
-const FILTERS = { high1: true, high0: true, low1: true, low0: true };
 
-function toggleFilter(risk, third) {
-  const key = `${risk}${third}`;
-  FILTERS[key] = !FILTERS[key];
-  const btnId = risk === 'high'
-    ? (third === 1 ? 'f-high-third' : 'f-high-pop')
-    : (third === 1 ? 'f-low-third'  : 'f-low-pop');
-  document.getElementById(btnId).classList.toggle('inactive', !FILTERS[key]);
-  refresh();
-}
 ['s-count','s-access','s-third','s-trigger','s-ntm','s-phase'].forEach(id => {
   document.getElementById(id).addEventListener('input', refresh);
 });
