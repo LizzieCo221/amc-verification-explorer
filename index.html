@@ -10,20 +10,19 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --red:     #a32d2d;
-    --red-bg:  rgba(163,45,45,0.08);
-    --red-fill:rgba(163,45,45,0.82);
-    --red-ring:rgba(163,45,45,0.14);
-    --gray:    #5f5e5a;
-    --gray-fill:rgba(90,90,86,0.72);
-    --gray-ring:rgba(90,90,86,0.12);
-    --ink:     #1a1917;
-    --muted:   #6b6a66;
-    --faint:   #e8e6e0;
-    --bg:      #f5f3ee;
-    --card:    #ffffff;
-    --border:  #d8d5cc;
-    --accent:  #2d5fa3;
+    --red:      #b41414;
+    --red-fill: rgba(180,20,20,0.90);
+    --red-ring: rgba(180,20,20,0.12);
+    --blue:     #1454b4;
+    --blue-fill:rgba(20,84,180,0.85);
+    --blue-ring:rgba(20,84,180,0.12);
+    --ink:      #1a1917;
+    --muted:    #6b6a66;
+    --faint:    #e8e6e0;
+    --bg:       #f5f3ee;
+    --card:     #ffffff;
+    --border:   #d8d5cc;
+    --accent:   #2d5fa3;
     --mono: 'DM Mono', monospace;
     --serif: 'Playfair Display', Georgia, serif;
   }
@@ -51,20 +50,27 @@
     margin-bottom: 0.4rem;
   }
 
+  header .byline {
+    font-size: 0.72rem;
+    color: #c8c4bc;
+    letter-spacing: 0.02em;
+    margin-top: 0.3rem;
+  }
+
   header p {
     font-size: 0.72rem;
     color: #a8a49c;
     letter-spacing: 0.04em;
     text-transform: uppercase;
+    margin-top: 0.2rem;
   }
 
   .layout {
     display: grid;
     grid-template-columns: 300px 1fr;
-    min-height: calc(100vh - 100px);
+    min-height: calc(100vh - 110px);
   }
 
-  /* ── SIDEBAR ── */
   .sidebar {
     background: var(--card);
     border-right: 1px solid var(--border);
@@ -188,10 +194,9 @@
   .reset-btn:hover {
     background: var(--faint);
     color: var(--ink);
-    border-color: var(--gray);
+    border-color: #999;
   }
 
-  /* ── MAIN ── */
   .main {
     padding: 1.5rem 2rem;
     display: flex;
@@ -221,7 +226,7 @@
   }
 
   .stat-card .s-val {
-    font-size: 1.4rem;
+    font-size: 1.35rem;
     font-weight: 500;
     color: var(--ink);
     font-family: var(--serif);
@@ -232,6 +237,10 @@
     color: var(--muted);
     margin-top: 2px;
   }
+
+  .stat-card.high-card { border-left: 3px solid var(--red); }
+  .stat-card.low-card  { border-left: 3px solid var(--blue); }
+  .stat-card.diff-card { border-left: 3px solid #888; }
 
   .chart-card {
     background: var(--card);
@@ -275,15 +284,8 @@
     gap: 5px;
   }
 
-  .dot-fill {
-    width: 10px; height: 10px; border-radius: 50%;
-  }
-
-  .dot-ring {
-    width: 10px; height: 10px; border-radius: 50%;
-    border: 2px solid currentColor;
-    background: transparent;
-  }
+  .dot-fill { width:10px; height:10px; border-radius:50%; }
+  .dot-ring { width:10px; height:10px; border-radius:50%; border:2px solid currentColor; background:transparent; }
 
   .chart-wrap {
     position: relative;
@@ -297,7 +299,17 @@
     line-height: 1.6;
     padding: 0.6rem 0.9rem;
     border-left: 2px solid var(--faint);
-    margin-top: 0.5rem;
+    margin-top: 0.75rem;
+  }
+
+  .note ul {
+    margin-top: 6px;
+    padding-left: 1.4rem;
+    line-height: 2.2;
+  }
+
+  .note li {
+    padding-left: 0.4rem;
   }
 
   @media (max-width: 800px) {
@@ -312,12 +324,12 @@
 
 <header>
   <h1>Arms Control Verification Intensity Explorer</h1>
-  <p>AMC Research Sprint · 2026 </p>
+  <div class="byline">Dylan Miars · Makenna Riley · Rebecca Bauman · Yuqin Wang</div>
+  <p>AMC Research Sprint · Uppsala University · Alva Myrdal Centre · 2026</p>
 </header>
-<p>Dylan Miars, Makenna Riley, Rebecca Bauman, Yuqin Wang </p>
+
 <div class="layout">
 
-  <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sidebar-title">Weight each variable (0 – 5, step 0.5)</div>
 
@@ -326,7 +338,7 @@
         <span class="slider-name">Mechanism count</span>
         <span class="slider-val" id="v-count">1.0</span>
       </div>
-      <div class="slider-desc">Number of distinct verified compliance mechanisms in the treaty (from amcdata_vercom_V2.csv row count per agreement)</div>
+      <div class="slider-desc">Number of distinct verified compliance mechanisms in the treaty (row count per agreement in amcdata_vercom_V2.csv)</div>
       <input type="range" id="s-count" min="0" max="5" step="0.5" value="1">
       <div class="tick-row"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
     </div>
@@ -346,7 +358,7 @@
         <span class="slider-name">Third-party inspector</span>
         <span class="slider-val" id="v-third">1.0</span>
       </div>
-      <div class="slider-desc">% of mechanisms where inspector_type > 0 (independent body, not party-on-party). 0 = countries check each other, 1 = fully independent</div>
+      <div class="slider-desc">Share of mechanisms where inspector_type > 0 (independent body). 0 = countries check each other, 1 = fully independent</div>
       <input type="range" id="s-third" min="0" max="5" step="0.5" value="1">
       <div class="tick-row"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
     </div>
@@ -356,7 +368,7 @@
         <span class="slider-name">Agreement-triggered</span>
         <span class="slider-val" id="v-trigger">1.0</span>
       </div>
-      <div class="slider-desc">% of mechanisms where trigger_type = 0 (automatic, treaty-scheduled). Higher = harder to evade or delay</div>
+      <div class="slider-desc">Share of mechanisms where trigger_type = 0 (automatic, treaty-scheduled). Higher = harder to evade or delay inspections</div>
       <input type="range" id="s-trigger" min="0" max="5" step="0.5" value="1">
       <div class="tick-row"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
     </div>
@@ -366,7 +378,7 @@
         <span class="slider-name">NTM provisions</span>
         <span class="slider-val" id="v-ntm">1.0</span>
       </div>
-      <div class="slider-desc">Count of non-interference + non-concealment clauses (ntm_interferene + ntm_concealment). Protects satellite surveillance</div>
+      <div class="slider-desc">Count of non-interference + non-concealment clauses (ntm_interferene + ntm_concealment). Protects satellite surveillance capacity</div>
       <input type="range" id="s-ntm" min="0" max="5" step="0.5" value="1">
       <div class="tick-row"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
     </div>
@@ -376,44 +388,43 @@
         <span class="slider-name">Phase coverage</span>
         <span class="slider-val" id="v-phase">1.0</span>
       </div>
-      <div class="slider-desc">Avg number of weapon lifecycle phases verified (development, testing, production, possession, stationing, transfer, use, general)</div>
+      <div class="slider-desc">Average number of weapon lifecycle phases verified (development, testing, production, possession, stationing, transfer, use, general)</div>
       <input type="range" id="s-phase" min="0" max="5" step="0.5" value="1">
       <div class="tick-row"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
     </div>
 
     <div class="formula-box">
-      <div class="f-title">Current formula</div>
-      <div class="f-eq" id="formula-display">
-        score = count×<span id="fw-count">1</span> + access×<span id="fw-access">1</span> + third×<span id="fw-third">1</span> + trigger×<span id="fw-trigger">1</span> + NTM×<span id="fw-ntm">1</span> + phase×<span id="fw-phase">1</span>
+      <div class="f-title">Current formula (all variables normalized 0–1)</div>
+      <div class="f-eq">
+        score = norm(count)×<span id="fw-count">1</span> + norm(access)×<span id="fw-access">1</span> + norm(third)×<span id="fw-third">1</span> + norm(trigger)×<span id="fw-trigger">1</span> + norm(NTM)×<span id="fw-ntm">1</span> + norm(phase)×<span id="fw-phase">1</span>
       </div>
     </div>
 
     <button class="reset-btn" id="reset-btn">↺ Reset all weights to 1</button>
   </aside>
 
-  <!-- MAIN -->
   <main class="main">
 
     <div class="stats-row">
       <div class="stat-card">
         <div class="s-label">Top treaty</div>
-        <div class="s-val" id="top-treaty" style="font-size:0.9rem;margin-top:2px;">START I</div>
-        <div class="s-sub" id="top-score">Score: 21.35</div>
+        <div class="s-val" id="top-treaty" style="font-size:0.85rem;margin-top:2px;">START I</div>
+        <div class="s-sub" id="top-score">Score: —</div>
       </div>
-      <div class="stat-card">
-        <div class="s-label">High risk treaties</div>
-        <div class="s-val" id="stat-high">22</div>
-        <div class="s-sub">of 31 graphed</div>
-      </div>
-      <div class="stat-card">
-        <div class="s-label">With third-party inspector</div>
-        <div class="s-val" id="stat-third">13</div>
-        <div class="s-sub">of 31 graphed</div>
-      </div>
-      <div class="stat-card">
-        <div class="s-label">Avg score (high risk)</div>
+      <div class="stat-card high-card">
+        <div class="s-label">Avg score — high risk</div>
         <div class="s-val" id="stat-avg-high">—</div>
-        <div class="s-sub">vs low risk: <span id="stat-avg-low">—</span></div>
+        <div class="s-sub">nuclear, chemical, biological, strategic</div>
+      </div>
+      <div class="stat-card low-card">
+        <div class="s-label">Avg score — low risk</div>
+        <div class="s-val" id="stat-avg-low">—</div>
+        <div class="s-sub">conventional / other</div>
+      </div>
+      <div class="stat-card diff-card">
+        <div class="s-label">High − low difference</div>
+        <div class="s-val" id="stat-diff">—</div>
+        <div class="s-sub">excl. outliers: <span id="stat-no-outlier">—</span></div>
       </div>
     </div>
 
@@ -421,26 +432,29 @@
       <div class="chart-header">
         <div>
           <div class="chart-title">Verification Intensity by Treaty</div>
-          <div class="chart-sub">Bubble size = mechanism count </div>
+          <div class="chart-sub">Bubble size = mechanism count · scores normalized 0–100 · drag sliders to reweight</div>
         </div>
         <div class="legend">
-          <div class="legend-item"><span class="dot-fill" style="background:rgba(163,45,45,0.82);"></span> High risk · third-party</div>
-          <div class="legend-item"><span class="dot-ring" style="color:#a32d2d;"></span> High risk · party-on-party</div>
-          <div class="legend-item"><span class="dot-fill" style="background:rgba(90,90,86,0.72);"></span> Low risk · third-party</div>
-          <div class="legend-item"><span class="dot-ring" style="color:#5f5e5a;"></span> Low risk · party-on-party</div>
+          <div class="legend-item"><span class="dot-fill" style="background:rgba(180,20,20,0.90);"></span> High risk · third-party</div>
+          <div class="legend-item"><span class="dot-ring" style="color:#b41414;"></span> High risk · party-on-party</div>
+          <div class="legend-item"><span class="dot-fill" style="background:rgba(20,84,180,0.85);"></span> Low risk · third-party</div>
+          <div class="legend-item"><span class="dot-ring" style="color:#1454b4;"></span> Low risk · party-on-party</div>
         </div>
       </div>
+
       <div class="chart-wrap">
-        <canvas id="mainChart" role="img" aria-label="Interactive bubble scatter chart of arms control treaties. Adjust sliders to change variable weights and see treaty rankings shift."></canvas>
+        <canvas id="mainChart" role="img" aria-label="Interactive bubble scatter chart of 31 arms control treaties. X-axis is year signed, Y-axis is normalized composite verification intensity score 0 to 100. Adjust sliders to reweight variables."></canvas>
       </div>
-     <div class="note">
-  <strong>Data source:</strong>
-  <ul style="margin-top:6px; padding-left:1.2rem; line-height:2;">
-    <li>AMC Arms Control Agreement Database V2 — Alva Myrdal Centre, Uppsala University</li>
-    <li>Risk classification based on <code>item</code> column (<code>summary_category = 0</code>) in amcdata_weapons_facilities_V2.csv</li>
-    <li>† Manually coded: JCPOA, Quadripartite Agreement, Brazil-Argentina Coop, Open Skies, CFE Adaptation, BDA Agreement, Sub-Regional Arms Control</li>
-    <li>97 of 128 agreements have zero verified compliance mechanisms and are excluded from this graph</li>
-  </ul>
+
+      <div class="note">
+        <strong>Data sources and methodology</strong>
+        <ul>
+          <li>AMC Arms Control Agreement Database V2 — Alva Myrdal Centre, Uppsala University</li>
+          <li>Risk classification derived from the <code>item</code> column (<code>summary_category = 0</code>) in amcdata_weapons_facilities_V2.csv using keyword matching on nuclear, chemical, biological, ICBM, SLBM, ballistic missile, and related terms</li>
+          <li>All six variables normalized to 0–1 before weighting, then rescaled to 0–100. Each slider multiplies the normalized variable by a weight of 0–5</li>
+          <li>† Manually coded (no real item rows in dataset): JCPOA, Quadripartite Agreement, Brazil-Argentina Coop → high risk; Open Skies, CFE Adaptation, BDA Agreement, Sub-Regional Arms Control → low risk</li>
+          <li>97 of 128 agreements have zero verified compliance mechanisms and are excluded from this visualization</li>
+        </ul>
       </div>
     </div>
 
@@ -482,17 +496,7 @@ const TREATIES = [
   {label:"Sub-Regional Arms Control",   year:1996,n:2, third:0,risk:"low", count:2,   access:0.0,  tpart:0.0,  trig:0.0,  ntm:0.0,phase:1.0,manual:true},
 ];
 
-function getWeights() {
-  return {
-    count:  parseFloat(document.getElementById('s-count').value),
-    access: parseFloat(document.getElementById('s-access').value),
-    third:  parseFloat(document.getElementById('s-third').value),
-    trigger:parseFloat(document.getElementById('s-trigger').value),
-    ntm:    parseFloat(document.getElementById('s-ntm').value),
-    phase:  parseFloat(document.getElementById('s-phase').value),
-  };
-}
-
+// Normalization bounds from actual data
 const MAX = { count:17, access:4, tpart:1, trig:1, ntm:2, phase:2 };
 const MIN = { count:1,  access:0, tpart:0, trig:0, ntm:0, phase:1 };
 
@@ -501,23 +505,35 @@ function norm(val, key) {
   return range === 0 ? 0 : (val - MIN[key]) / range;
 }
 
+function getWeights() {
+  return {
+    count:   parseFloat(document.getElementById('s-count').value),
+    access:  parseFloat(document.getElementById('s-access').value),
+    third:   parseFloat(document.getElementById('s-third').value),
+    trigger: parseFloat(document.getElementById('s-trigger').value),
+    ntm:     parseFloat(document.getElementById('s-ntm').value),
+    phase:   parseFloat(document.getElementById('s-phase').value),
+  };
+}
 
 function computeScore(t, w) {
-  const raw = norm(t.count, 'count')  * w.count  +
-              norm(t.access,'access') * w.access +
-              norm(t.tpart, 'tpart')  * w.third  +
-              norm(t.trig,  'trig')   * w.trigger+
-              norm(t.ntm,   'ntm')    * w.ntm    +
-              norm(t.phase, 'phase')  * w.phase;
-  return (raw / 6) * 100;
+  const totalWeight = w.count + w.access + w.third + w.trigger + w.ntm + w.phase;
+  if (totalWeight === 0) return 0;
+  const raw = norm(t.count,  'count')  * w.count  +
+              norm(t.access, 'access') * w.access +
+              norm(t.tpart,  'tpart')  * w.third  +
+              norm(t.trig,   'trig')   * w.trigger +
+              norm(t.ntm,    'ntm')    * w.ntm    +
+              norm(t.phase,  'phase')  * w.phase;
+  return (raw / totalWeight) * 100;
 }
- 
+
 function buildDatasets(w) {
   const groups = [
-    { risk:'high', third:0, bg:'rgba(163,45,45,0.82)', bc:'rgba(163,45,45,0.95)' },
-    { risk:'high', third:1, bg:'rgba(163,45,45,0.10)', bc:'rgba(163,45,45,0.95)' },
-    { risk:'low',  third:0, bg:'rgba(90,90,86,0.72)',  bc:'rgba(90,90,86,0.95)'  },
-    { risk:'low',  third:1, bg:'rgba(90,90,86,0.10)',  bc:'rgba(90,90,86,0.95)'  },
+    { risk:'high', third:0, bg:'rgba(180,20,20,0.90)',  bc:'rgba(180,20,20,1.0)'  },
+    { risk:'high', third:1, bg:'rgba(180,20,20,0.12)',  bc:'rgba(180,20,20,1.0)'  },
+    { risk:'low',  third:0, bg:'rgba(20,84,180,0.85)',  bc:'rgba(20,84,180,1.0)'  },
+    { risk:'low',  third:1, bg:'rgba(20,84,180,0.12)',  bc:'rgba(20,84,180,1.0)'  },
   ];
   return groups.map(g => ({
     label: `${g.risk}-${g.third}`,
@@ -527,7 +543,7 @@ function buildDatasets(w) {
         x: t.year,
         y: Math.round(computeScore(t, w) * 100) / 100,
         r: Math.max(4, Math.sqrt(t.n) * 6),
-        label: t.label + (t.manual ? ' †' : ''),
+        label: '    ' + t.label + (t.manual ? ' †' : ''),
         n: t.n,
         risk: t.risk,
         third: t.third,
@@ -542,21 +558,39 @@ function updateStats(w) {
   const scored = TREATIES.map(t => ({ ...t, score: computeScore(t, w) }));
   const top = scored.reduce((a, b) => a.score > b.score ? a : b);
   document.getElementById('top-treaty').textContent = top.label;
-  document.getElementById('top-score').textContent = `Score: ${top.score.toFixed(2)}`;
+  document.getElementById('top-score').textContent  = `Score: ${top.score.toFixed(2)}`;
 
   const high = scored.filter(t => t.risk === 'high');
   const low  = scored.filter(t => t.risk === 'low');
   const avgH = high.reduce((s,t) => s + t.score, 0) / (high.length || 1);
   const avgL = low.reduce((s,t)  => s + t.score, 0) / (low.length  || 1);
-  document.getElementById('stat-avg-high').textContent = avgH.toFixed(1);
-  document.getElementById('stat-avg-low').textContent  = avgL.toFixed(1);
+  document.getElementById('stat-avg-high').textContent = avgH.toFixed(2);
+  document.getElementById('stat-avg-low').textContent  = avgL.toFixed(2);
+  document.getElementById('stat-diff').textContent     = Math.abs(avgH - avgL).toFixed(2);
+
+  // Average excluding top 3 outliers
+  const allScores = scored.map(t => t.score).sort((a,b) => b - a);
+  const trimmed   = allScores.slice(3);
+  const noOutlier = trimmed.reduce((s,v) => s + v, 0) / (trimmed.length || 1);
+  document.getElementById('stat-no-outlier').textContent = noOutlier.toFixed(2);
 }
 
 function updateFormula(w) {
-  ['count','access','third','trigger','ntm','phase'].forEach(k => {
-    document.getElementById(`fw-${k === 'trigger' ? 'trigger' : k}`).textContent = w[k];
-  });
+  document.getElementById('fw-count').textContent   = w.count;
+  document.getElementById('fw-access').textContent  = w.access;
+  document.getElementById('fw-third').textContent   = w.third;
   document.getElementById('fw-trigger').textContent = w.trigger;
+  document.getElementById('fw-ntm').textContent     = w.ntm;
+  document.getElementById('fw-phase').textContent   = w.phase;
+}
+
+function updateSliderLabels(w) {
+  document.getElementById('v-count').textContent   = w.count.toFixed(1);
+  document.getElementById('v-access').textContent  = w.access.toFixed(1);
+  document.getElementById('v-third').textContent   = w.third.toFixed(1);
+  document.getElementById('v-trigger').textContent = w.trigger.toFixed(1);
+  document.getElementById('v-ntm').textContent     = w.ntm.toFixed(1);
+  document.getElementById('v-phase').textContent   = w.phase.toFixed(1);
 }
 
 const ctx = document.getElementById('mainChart').getContext('2d');
@@ -566,17 +600,17 @@ const chart = new Chart(ctx, {
   options: {
     responsive: true,
     maintainAspectRatio: false,
-    animation: { duration: 300 },
+    animation: { duration: 250 },
     plugins: {
       legend: { display: false },
       tooltip: {
         callbacks: {
           label: ctx => [
-            ` ${ctx.raw.label}`,
-            ` Score: ${ctx.raw.y.toFixed(2)}`,
-            ` Mechanisms: ${ctx.raw.n}`,
-            ` Risk: ${ctx.raw.risk}`,
-            ` Inspector: ${ctx.raw.third ? 'third-party' : 'party-on-party'}`,
+            ctx.raw.label,
+            `    Score: ${ctx.raw.y.toFixed(2)} / 100`,
+            `    Mechanisms: ${ctx.raw.n}`,
+            `    Risk tier: ${ctx.raw.risk}`,
+            `    Inspector: ${ctx.raw.third ? 'third-party' : 'party-on-party'}`,
           ]
         }
       }
@@ -585,14 +619,21 @@ const chart = new Chart(ctx, {
       x: {
         title: { display: true, text: 'Year signed', font: { size: 12, family: "'DM Mono', monospace" } },
         grid: { color: 'rgba(180,175,165,0.25)' },
-        ticks: { font: { size: 11, family: "'DM Mono', monospace" } },
-        min: 1955, max: 2020,
+        ticks: {
+          font: { size: 11, family: "'DM Mono', monospace" },
+          stepSize: 10,
+          maxRotation: 0,
+          callback: value => value.toString(),
+        },
+        min: 1955,
+        max: 2020,
       },
       y: {
-        title: { display: true, text: 'Composite verification intensity score', font: { size: 12, family: "'DM Mono', monospace" } },
+        title: { display: true, text: 'Composite verification intensity score (0 – 100)', font: { size: 12, family: "'DM Mono', monospace" } },
         grid: { color: 'rgba(180,175,165,0.25)' },
         ticks: { font: { size: 11, family: "'DM Mono', monospace" } },
         min: 0,
+        max: 100,
       }
     }
   }
@@ -604,11 +645,7 @@ function refresh() {
   chart.update();
   updateStats(w);
   updateFormula(w);
-  ['count','access','third','trigger','ntm','phase'].forEach(k => {
-    const sid = k === 'count' ? 's-count' : k === 'access' ? 's-access' : k === 'third' ? 's-third' : k === 'trigger' ? 's-trigger' : k === 'ntm' ? 's-ntm' : 's-phase';
-    const vid = k === 'count' ? 'v-count' : k === 'access' ? 'v-access' : k === 'third' ? 'v-third' : k === 'trigger' ? 'v-trigger' : k === 'ntm' ? 'v-ntm' : 'v-phase';
-    document.getElementById(vid).textContent = parseFloat(document.getElementById(sid).value).toFixed(1);
-  });
+  updateSliderLabels(w);
 }
 
 ['s-count','s-access','s-third','s-trigger','s-ntm','s-phase'].forEach(id => {
@@ -622,8 +659,7 @@ document.getElementById('reset-btn').addEventListener('click', () => {
   refresh();
 });
 
-updateStats(getWeights());
-updateFormula(getWeights());
+refresh();
 </script>
 </body>
 </html>
