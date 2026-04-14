@@ -493,9 +493,21 @@ function getWeights() {
   };
 }
 
+const MAX = { count:17, access:4, tpart:1, trig:1, ntm:2, phase:2 };
+const MIN = { count:1,  access:0, tpart:0, trig:0, ntm:0, phase:1 };
+
+function norm(val, key) {
+  const range = MAX[key] - MIN[key];
+  return range === 0 ? 0 : (val - MIN[key]) / range;
+}
+
 function computeScore(t, w) {
-  return t.count * w.count + t.access * w.access + t.tpart * w.third +
-         t.trig * w.trigger + t.ntm * w.ntm + t.phase * w.phase;
+  return norm(t.count, 'count')  * w.count  +
+         norm(t.access,'access') * w.access +
+         norm(t.tpart, 'tpart')  * w.third  +
+         norm(t.trig,  'trig')   * w.trigger+
+         norm(t.ntm,   'ntm')    * w.ntm    +
+         norm(t.phase, 'phase')  * w.phase;
 }
 
 function buildDatasets(w) {
