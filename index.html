@@ -360,7 +360,7 @@
         <span class="slider-name">Mechanism count</span>
         <span class="slider-val" id="v-count">2.0</span>
       </div>
-      <div class="slider-desc">Number of distinct verified compliance mechanisms in the treaty (row count per agreement in amcdata_vercom_V2.csv)</div>
+      <div class="slider-desc">Number of distinct verified compliance mechanisms in the treaty</div>
       <input type="range" id="s-count" min="0" max="5" step="0.5" value="2">
       <div class="tick-row"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
     </div>
@@ -370,7 +370,7 @@
         <span class="slider-name">Access depth</span>
         <span class="slider-val" id="v-access">2.0</span>
       </div>
-      <div class="slider-desc">Sum of area_access + facility_access + item_access + item_section_access (0–4 per mechanism), averaged across mechanisms</div>
+      <div class="slider-desc">How much great the access is for the area, facility, and item sections (averaged across types)</div>
       <input type="range" id="s-access" min="0" max="5" step="0.5" value="2">
       <div class="tick-row"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
     </div>
@@ -380,7 +380,7 @@
         <span class="slider-name">Third-party inspector</span>
         <span class="slider-val" id="v-third">0.5</span>
       </div>
-      <div class="slider-desc">Share of mechanisms where inspector_type > 0 (independent body). 0 = countries check each other, 1 = fully independent</div>
+      <div class="slider-desc">Share of mechanisms where inspector type is fully independent (as opposed to countries checking each other)</div>
       <input type="range" id="s-third" min="0" max="5" step="0.5" value="0.5">
       <div class="tick-row"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
     </div>
@@ -390,7 +390,7 @@
         <span class="slider-name">Agreement-triggered</span>
         <span class="slider-val" id="v-trigger">1.5</span>
       </div>
-      <div class="slider-desc">Share of mechanisms where trigger_type = 0 (automatic, treaty-scheduled). Higher = harder to evade or delay inspections</div>
+      <div class="slider-desc">Share of mechanisms where triggers are automatic and/or treaty scheduled</div>
       <input type="range" id="s-trigger" min="0" max="5" step="0.5" value="1.5">
       <div class="tick-row"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
     </div>
@@ -400,7 +400,7 @@
         <span class="slider-name">NTM provisions</span>
         <span class="slider-val" id="v-ntm">1.0</span>
       </div>
-      <div class="slider-desc">Count of non-interference + non-concealment clauses (ntm_interferene + ntm_concealment). Protects satellite surveillance capacity</div>
+      <div class="slider-desc">Count of non-interference + non-concealment clauses</div>
       <input type="range" id="s-ntm" min="0" max="5" step="0.5" value="1">
       <div class="tick-row"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
     </div>
@@ -410,7 +410,7 @@
         <span class="slider-name">Phase coverage</span>
         <span class="slider-val" id="v-phase">1.5</span>
       </div>
-      <div class="slider-desc">Average number of weapon lifecycle phases verified (development, testing, production, possession, stationing, transfer, use, general)</div>
+      <div class="slider-desc">Average number of weapon lifecycle phases verified (Development, Testing, Production, Possession, Stationing, Transfer, Use, General)</div>
       <input type="range" id="s-phase" min="0" max="5" step="0.5" value="1.5">
       <div class="tick-row"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
     </div>
@@ -456,7 +456,7 @@
       <div class="chart-header">
         <div>
           <div class="chart-title">Verification Intensity by Treaty</div>
-       <div class="chart-sub">Bubble size = mechanism count · scores normalized 0–100 · drag sliders to reweight · click the legend buttons to filter by risk tier or inspection type</div>
+       <div class="chart-sub">31 treaties · scores normalized 0–100</div>
         </div>
         <div class="legend">
           <button class="filter-btn" id="f-high-third" onclick="toggleFilter('high',1)">
@@ -482,10 +482,28 @@
         <strong>Data sources and methodology</strong>
         <ul>
           <li>AMC Arms Control Agreement Database V2 — Alva Myrdal Centre, Uppsala University</li>
-          <li>Risk classification derived from the <code>item</code> column (<code>summary_category = 0</code>) in amcdata_weapons_facilities_V2.csv using keyword matching on nuclear, chemical, biological, ICBM, SLBM, ballistic missile, and related terms</li>
        
-          <li>† Manually coded (no real item rows in dataset): JCPOA, Quadripartite Agreement, Brazil-Argentina Coop → high risk; Open Skies, CFE Adaptation, BDA Agreement, Sub-Regional Arms Control → low risk</li>
-          <li>97 of 128 agreements have zero verified compliance mechanisms and are excluded from this visualization</li>
+          <li>† Manually coded: JCPOA, Quadripartite Agreement, Brazil-Argentina Coop → high risk; Open Skies, CFE Adaptation, BDA Agreement, Sub-Regional Arms Control → low risk</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">How to Use</div>
+          <div class="chart-sub">A quick guide to exploring this tool</div>
+        </div>
+      </div>
+
+      <div class="note" style="margin-top:0;">
+        <ul>
+          <li>Drag the sliders in the left panel to reweight each variable — the chart and stats recalculate instantly</li>
+          <li>Click the legend buttons above the chart to filter by risk tier or inspector type</li>
+          <li>Hover over any bubble to see that treaty's full score breakdown</li>
+          <li>Click on the bubble itself to go to the text of the treaty</li>
+          <li>Click "↺ Reset to our weights" in the sidebar to restore the default weighting</li>
+          <li>Bubble size reflects the number of verified compliance mechanisms in each treaty</li>
         </ul>
       </div>
     </div>
@@ -495,37 +513,37 @@
 
 <script>
 const TREATIES = [
-  {label:"START I",                     year:1991,n:17,third:0,risk:"high",count:17,  access:0.941,tpart:0.0,  trig:0.412,ntm:2.0,phase:4.0,manual:false},
-  {label:"New START Treaty",            year:2010,n:11,third:0,risk:"high",count:11,  access:1.455,tpart:0.0,  trig:0.636,ntm:2.0,phase:4.0,manual:false},
-  {label:"INF",                         year:1987,n:9, third:0,risk:"high",count:9,   access:1.667,tpart:0.0,  trig:0.556,ntm:2.0,phase:4.0,manual:false},
-  {label:"Peaceful Nuclear Explosions", year:1976,n:5, third:0,risk:"high",count:5,   access:2.4,  tpart:0.0,  trig:0.2,  ntm:1.0,phase:3.0,manual:false},
-  {label:"START II",                    year:1993,n:4, third:0,risk:"high",count:4,   access:1.25, tpart:0.0,  trig:0.5,  ntm:2.0,phase:4.0,manual:false},
-  {label:"CWC",                         year:1993,n:4, third:1,risk:"high",count:4,   access:1.5,  tpart:1.0,  trig:0.5,  ntm:0.0,phase:6.0,manual:false},
-  {label:"JCPOA",                       year:2015,n:3, third:1,risk:"high",count:3,   access:2.0,  tpart:1.0,  trig:1.0,  ntm:0.0,phase:4.0,manual:true},
-  {label:"CFE",                         year:1990,n:4, third:0,risk:"low", count:4,   access:2.0,  tpart:0.0,  trig:0.5,  ntm:0.0,phase:2.0,manual:false},
-  {label:"CFE Adaptation",              year:1999,n:5, third:0,risk:"low", count:5,   access:1.0,  tpart:0.0,  trig:0.4,  ntm:0.0,phase:3.0,manual:true},
-  {label:"CTBT",                        year:1996,n:3, third:1,risk:"high",count:3,   access:1.0,  tpart:0.667,trig:0.667,ntm:1.0,phase:3.0,manual:false},
-  {label:"TTBT",                        year:1974,n:3, third:0,risk:"high",count:3,   access:1.333,tpart:0.0,  trig:0.333,ntm:1.0,phase:2.0,manual:false},
-  {label:"BDA Agreement",               year:1990,n:5, third:0,risk:"low", count:5,   access:0.0,  tpart:0.0,  trig:0.4,  ntm:0.0,phase:1.0,manual:true},
-  {label:"ABM MOU",                     year:1997,n:2, third:0,risk:"high",count:2,   access:0.5,  tpart:0.0,  trig:0.5,  ntm:2.0,phase:1.0,manual:false},
-  {label:"Quadripartite Agreement",     year:1991,n:1, third:1,risk:"high",count:1,   access:2.0,  tpart:1.0,  trig:0.0,  ntm:0.0,phase:5.0,manual:true},
-  {label:"Agreed Framework",            year:1994,n:2, third:1,risk:"high",count:2,   access:1.0,  tpart:1.0,  trig:0.5,  ntm:0.0,phase:3.0,manual:false},
-  {label:"ABM Treaty",                  year:1972,n:1, third:0,risk:"high",count:1,   access:0.0,  tpart:0.0,  trig:1.0,  ntm:2.0,phase:5.0,manual:false},
-  {label:"Outer Space Treaty",          year:1967,n:1, third:0,risk:"high",count:1,   access:3.0,  tpart:0.0,  trig:0.0,  ntm:0.0,phase:3.0,manual:false},
-  {label:"Treaty of Tlatelolco",        year:1967,n:2, third:1,risk:"high",count:2,   access:1.0,  tpart:1.0,  trig:0.0,  ntm:0.0,phase:5.0,manual:false},
-  {label:"Open Skies",                  year:1992,n:1, third:0,risk:"low", count:1,   access:2.0,  tpart:0.0,  trig:1.0,  ntm:0.0,phase:3.0,manual:true},
-  {label:"Brazil-Argentina Coop",       year:1980,n:1, third:1,risk:"high",count:1,   access:2.0,  tpart:1.0,  trig:0.0,  ntm:0.0,phase:4.0,manual:true},
-  {label:"Interim Agreement",           year:1972,n:1, third:0,risk:"high",count:1,   access:0.0,  tpart:0.0,  trig:1.0,  ntm:2.0,phase:3.0,manual:false},
-  {label:"Stockholm Document",          year:1986,n:2, third:0,risk:"low", count:2,   access:2.0,  tpart:0.0,  trig:0.0,  ntm:0.0,phase:2.0,manual:false},
+  {label:"START I", url: "https://media.nti.org/documents/start_1_treaty.pdf", year:1991,n:17,third:0,risk:"high",count:17,  access:0.941,tpart:0.0,  trig:0.412,ntm:2.0,phase:4.0,manual:false},
+  {label:"New START Treaty", url: "https://media.nti.org/documents/new_start_treaty.pdf",year:2010,n:11,third:0,risk:"high",count:11,  access:1.455,tpart:0.0,  trig:0.636,ntm:2.0,phase:4.0,manual:false},
+  {label:"INF", url: "https://media.nti.org/documents/inf_treaty.pdf", year:1987,n:9, third:0,risk:"high",count:9,   access:1.667,tpart:0.0,  trig:0.556,ntm:2.0,phase:4.0,manual:false},
+  {label:"Peaceful Nuclear Explosions",url: "https://www.nti.org/wp-content/uploads/2021/09/pne_treaty.pdf", year:1976,n:5, third:0,risk:"high",count:5,   access:2.4,  tpart:0.0,  trig:0.2,  ntm:1.0,phase:3.0,manual:false},
+  {label:"START II", url:"https://www.nti.org/wp-content/uploads/2021/09/start_2_treaty.pdf", year:1993,n:4, third:0,risk:"high",count:4,   access:1.25, tpart:0.0,  trig:0.5,  ntm:2.0,phase:4.0,manual:false},
+  {label:"CWC", url:"https://www.opcw.org/sites/default/files/documents/CWC/CWC_en.pdf", year:1993,n:4, third:1,risk:"high",count:4,   access:1.5,  tpart:1.0,  trig:0.5,  ntm:0.0,phase:6.0,manual:false},
+  {label:"JCPOA", url:"https://2009-2017.state.gov/documents/organization/245317.pdf", year:2015,n:3, third:1,risk:"high",count:3,   access:2.0,  tpart:1.0,  trig:1.0,  ntm:0.0,phase:4.0,manual:true},
+  {label:"CFE", url:"https://media.nti.org/documents/cfe.pdf", year:1990,n:4, third:0,risk:"low", count:4,   access:2.0,  tpart:0.0,  trig:0.5,  ntm:0.0,phase:2.0,manual:false},
+  {label:"CFE Adaptation", url:"https://cdn.osce.org/sites/default/files/f/documents/e/3/14108.pdf", year:1999,n:5, third:0,risk:"low", count:5,   access:1.0,  tpart:0.0,  trig:0.4,  ntm:0.0,phase:3.0,manual:true},
+  {label:"CTBT", url:"https://media.nti.org/pdfs/aptctbt.pdf", year:1996,n:3, third:1,risk:"high",count:3,   access:1.0,  tpart:0.667,trig:0.667,ntm:1.0,phase:3.0,manual:false},
+  {label:"TTBT",url:"https://csps.aerospace.org/sites/default/files/2021-08/Threshold%20Test%20Ban%20Treaty%20Jul74.pdf", year:1974,n:3, third:0,risk:"high",count:3,   access:1.333,tpart:0.0,  trig:0.333,ntm:1.0,phase:2.0,manual:false},
+  {label:"BDA Agreement", url: "https://apps.dtic.mil/sti/tr/pdf/ADA324477.pdf",  year:1990,n:5, third:0,risk:"low", count:5,   access:0.0,  tpart:0.0,  trig:0.4,  ntm:0.0,phase:1.0,manual:true},
+  {label:"ABM MOU", url:"https://www.uu.se/download/18.5106ede018fa3fd5f731119c/1716640905675/abm_memorandum.pdf", year:1997,n:2, third:0,risk:"high",count:2,   access:0.5,  tpart:0.0,  trig:0.5,  ntm:2.0,phase:1.0,manual:false},
+  {label:"Quadripartite Agreement", url:"https://www.iaea.org/sites/default/files/infcirc435.pdf", year:1991,n:1, third:1,risk:"high",count:1,   access:2.0,  tpart:1.0,  trig:0.0,  ntm:0.0,phase:5.0,manual:true},
+  {label:"Agreed Framework",url: "https://media.nti.org/pdfs/aptagframe.pdf", year:1994,n:2, third:1,risk:"high",count:2,   access:1.0,  tpart:1.0,  trig:0.5,  ntm:0.0,phase:3.0,manual:false},
+  {label:"ABM Treaty", url:"https://media.nti.org/documents/abm_treaty.pdf", year:1972,n:1, third:0,risk:"high",count:1,   access:0.0,  tpart:0.0,  trig:1.0,  ntm:2.0,phase:5.0,manual:false},
+  {label:"Outer Space Treaty", url:"https://media.nti.org/documents/outer_space_treaty.pdf", year:1967,n:1, third:0,risk:"high",count:1,   access:3.0,  tpart:0.0,  trig:0.0,  ntm:0.0,phase:3.0,manual:false},
+  {label:"Treaty of Tlatelolco",    url: "https://media.nti.org/pdfs/Treaty_of_Tlatelolco.pdf", year:1967,n:2, third:1,risk:"high",count:2,   access:1.0,  tpart:1.0,  trig:0.0,  ntm:0.0,phase:5.0,manual:false},
+  {label:"Open Skies", url:"https://cdn.osce.org/sites/default/files/f/documents/1/5/14127.pdf", year:1992,n:1, third:0,risk:"low", count:1,   access:2.0,  tpart:0.0,  trig:1.0,  ntm:0.0,phase:3.0,manual:true},
+  {label:"Brazil-Argentina Coop", url:"https://npsglobal.org/eng/images/stories/pdf/cooperation_agreement_between_brazil_and_argentina1980.pdf", year:1980,n:1, third:1,risk:"high",count:1,   access:2.0,  tpart:1.0,  trig:0.0,  ntm:0.0,phase:4.0,manual:true},
+  {label:"Interim Agreement", url:"https://media.nti.org/documents/salt_1.pdf", year:1972,n:1, third:0,risk:"high",count:1,   access:0.0,  tpart:0.0,  trig:1.0,  ntm:2.0,phase:3.0,manual:false},
+  {label:"Stockholm Document", url:"https://cdn.osce.org/sites/default/files/f/documents/5/d/41238.pdf", year:1986,n:2, third:0,risk:"low", count:2,   access:2.0,  tpart:0.0,  trig:0.0,  ntm:0.0,phase:2.0,manual:false},
   {label:"Antarctic Treaty",            year:1959,n:2, third:0,risk:"high",count:2,   access:1.5,  tpart:0.0,  trig:0.0,  ntm:0.0,phase:3.0,manual:false},
-  {label:"Seabed Treaty",               year:1971,n:2, third:0,risk:"high",count:2,   access:1.5,  tpart:0.0,  trig:0.0,  ntm:0.0,phase:2.0,manual:false},
-  {label:"Treaty of Rarotonga",         year:1985,n:1, third:1,risk:"high",count:1,   access:1.0,  tpart:1.0,  trig:0.0,  ntm:0.0,phase:5.0,manual:false},
-  {label:"BWC",                         year:1972,n:1, third:1,risk:"high",count:1,   access:1.0,  tpart:1.0,  trig:0.0,  ntm:0.0,phase:3.0,manual:false},
-  {label:"ENMOD",                       year:1977,n:1, third:1,risk:"low", count:1,   access:1.0,  tpart:1.0,  trig:0.0,  ntm:0.0,phase:1.0,manual:false},
-  {label:"Pelindaba Treaty",            year:1996,n:1, third:1,risk:"high",count:1,   access:1.0,  tpart:1.0,  trig:0.0,  ntm:0.0,phase:5.0,manual:false},
-  {label:"Bangkok Treaty",              year:1995,n:1, third:1,risk:"high",count:1,   access:1.0,  tpart:1.0,  trig:0.0,  ntm:0.0,phase:5.0,manual:false},
-  {label:"Ottawa Treaty",               year:1997,n:1, third:1,risk:"low", count:1,   access:1.0,  tpart:1.0,  trig:0.0,  ntm:0.0,phase:4.0,manual:false},
-  {label:"Sub-Regional Arms Control",   year:1996,n:2, third:0,risk:"low", count:2,   access:0.0,  tpart:0.0,  trig:0.0,  ntm:0.0,phase:2.0,manual:true},
+  {label:"Seabed Treaty", url:"https://media.nti.org/documents/antarctic_treaty.pdf", year:1971,n:2, third:0,risk:"high",count:2,   access:1.5,  tpart:0.0,  trig:0.0,  ntm:0.0,phase:2.0,manual:false},
+  {label:"Treaty of Rarotonga", url:"https://media.nti.org/documents/treaty_of_rarotonga.pdf",  year:1985,n:1, third:1,risk:"high",count:1,   access:1.0,  tpart:1.0,  trig:0.0,  ntm:0.0,phase:5.0,manual:false},
+  {label:"BWC", url:"https://ihl-databases.icrc.org/en/ihl-treaties/bwc-1972", year:1972,n:1, third:1,risk:"high",count:1,   access:1.0,  tpart:1.0,  trig:0.0,  ntm:0.0,phase:3.0,manual:false},
+  {label:"ENMOD", url:"https://treaties.un.org/doc/Treaties/1978/10/19781005%2000-39%20AM/Ch_XXVI_01p.pdf", year:1977,n:1, third:1,risk:"low", count:1,   access:1.0,  tpart:1.0,  trig:0.0,  ntm:0.0,phase:1.0,manual:false},
+  {label:"Pelindaba Treaty", url:"https://www.nti.org/wp-content/uploads/2021/09/pelindaba_treaty.pdf", year:1996,n:1, third:1,risk:"high",count:1,   access:1.0,  tpart:1.0,  trig:0.0,  ntm:0.0,phase:5.0,manual:false},
+  {label:"Bangkok Treaty", url:"https://agreement.asean.org/media/download/20131230234315.pdf", year:1995,n:1, third:1,risk:"high",count:1,   access:1.0,  tpart:1.0,  trig:0.0,  ntm:0.0,phase:5.0,manual:false},
+  {label:"Ottawa Treaty", url:"https://media.nti.org/documents/mineban.pdf", year:1997,n:1, third:1,risk:"low", count:1,   access:1.0,  tpart:1.0,  trig:0.0,  ntm:0.0,phase:4.0,manual:false},
+  {label:"Sub-Regional Arms Control", url:"https://www.archiviodisarmo.it/view/QQorm1zkCuQ_eBudOj5HGwtBS_RpLiGQX1Iw4ZqUSY8/1996-agreement-on-subregional-arms-control-1996.pdf",year:1996,n:2, third:0,risk:"low", count:2,   access:0.0,  tpart:0.0,  trig:0.0,  ntm:0.0,phase:2.0,manual:true},
 ];
 
 // Normalization bounds from actual data
@@ -590,6 +608,7 @@ function buildDatasets(w) {
           y: Math.round(computeScore(t, w) * 100) / 100,
           r: Math.max(4, Math.sqrt(t.n) * 6),
           label: '    ' + t.label + (t.manual ? ' †' : ''),
+          url: t.url,
           n: t.n,
           risk: t.risk,
           third: t.third,
@@ -659,6 +678,22 @@ const chart = new Chart(ctx, {
   options: {
     responsive: true,
     maintainAspectRatio: false,
+
+    onClick(event, elements) {
+
+        if (!elements.length) return;
+
+        const point = elements[0];
+
+        const treaty =
+            chart.data.datasets[point.datasetIndex]
+                 .data[point.index];
+
+        if (treaty.url) {
+            window.open(treaty.url, "_blank");
+        }
+    },
+
     animation: { duration: 250 },
     plugins: {
       legend: { display: false },
